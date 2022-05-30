@@ -34,36 +34,82 @@ class Person {
 private:
 	string name;
 	int age;
-	static int a;
+	char* city;
+	static int num;
 public:
-	
-	string getName() const{
+	static void setNum(int c) {
+		num = c;
+	}
+	string getName() const {
 		return name;
 	}
 	int getAge() const {
 		return age;
 	}
-	void setName(string name){
+	void setName(string name) {
 		(*this).name = name;
 	}
-	void setAge(int age){
+	void setAge(int age) {
 		(*this).age = age;
 	}
-	Person(string _name = "", int _age = 0) {
+	Person(string _name , int _age,const char* _city) {
 		name = _name;
 		age = _age;
+		int len = strlen(_city);
+		city = new char[len + 1];
+		strcpy_s(city, len + 1, _city);
+		num++;
 	}
 	~Person() {
-		cout << "析构Person：[" << name << "," << age << "]" << endl;
+		cout << "析构Person：[" << "name:" << name << "," << "age:" << age << "]" << endl;
+		num--;
 	}
 	friend ostream& operator<<(ostream& os, Person& a) {
-		os << "Person：[" << a.name << "," << a.age << "]" << endl;
+		os << "Person：[" << "name:" << a.name << "," << "age:" << a.age << "]" << endl;
 		return os;
 	}
 	explicit operator int() {
 		return age;
 	}
+	static int getNum() {
+		return num;
+	}
+	bool operator==(const Person& a) {
+		if(this->name == a.name&&this->age == a.age&&this->city==a.city){
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	Person& operator=(const Person& a) {
+		
+		if (*this == a) {
+			return *this;
+		}
+		delete[] city;
+		int len = strlen(a.city);
+		city = new char[len + 1];
+		strcpy_s(city, len+1,a.city);
+		age = a.age;
+		name = a.name;
+
+	}
+	Person(const Person& a) {
+		age = a.age;
+		name = a.name;
+		
+		int len = strlen(a.city);
+		city = new char[len + 1];
+		strcpy_s(city, len+1, a.city);
+		num++;
+	}
+	char* getCity() {
+		return city;
+	}
 };
+
+//int Person::num = 0;
 
 struct People {
 private:
@@ -94,9 +140,29 @@ public:
 	
 };
 
-
-int Person::a = 444;
-int main() {
+class Student :public Person {
+private:
+	string school;
 	
+public:
+	Student(string _name,int age,const char* _city,string _school) :Person(_name,age,_city) {
+		school = _school;
+	}
+	~Student() {
+		cout << "析构Student：[name:" << getName() << "," << "age:" << getAge() << "," << "school:" << school << "]" << endl;
+	}
+	Student() :Person("李华", 22, "赣州"), school("于都二中") {
+
+	}
+};
+
+
+int main() {
+	int* a = new int;
+	*a = 44;
+	unique_ptr<int> p(a);
+	/*shared_ptr<int> p2(a);
+	cout << *p2 << endl;*/
+	cout << *p << endl;
 }
 
